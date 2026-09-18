@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QR Studio — Özelleştirilebilir QR Kod Oluşturucu</title>
+<meta name="description" content="Logo, şekil, renk ve çerçeve özelleştirmeli; PNG, SVG ve PDF çıktı veren, tamamen çevrimdışı çalışan QR kod oluşturucu.">
+<meta name="theme-color" content="#F5F6FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0D14" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%236366F1'/><g fill='white'><rect x='6' y='6' width='8' height='8' rx='2'/><rect x='18' y='6' width='8' height='8' rx='2'/><rect x='6' y='18' width='8' height='8' rx='2'/><rect x='18' y='18' width='3' height='3'/><rect x='23' y='18' width='3' height='3'/><rect x='18' y='23' width='3' height='3'/><rect x='23' y='23' width='3' height='3'/></g></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+      <defs><linearGradient id="bg" x1="0" y1="0" x2="32" y2="32">
+        <stop offset="0" stop-color="#6366F1"/><stop offset="1" stop-color="#EC4899"/>
+      </linearGradient></defs>
+      <g fill="#fff">
+        <rect x="6" y="6" width="8" height="8" rx="2.5"/>
+        <rect x="18" y="6" width="8" height="8" rx="2.5"/>
+        <rect x="6" y="18" width="8" height="8" rx="2.5"/>
+        <rect x="18" y="18" width="3.2" height="3.2" rx="1"/>
+        <rect x="22.8" y="18" width="3.2" height="3.2" rx="1"/>
+        <rect x="18" y="22.8" width="3.2" height="3.2" rx="1"/>
+        <rect x="22.8" y="22.8" width="3.2" height="3.2" rx="1"/>
+      </g>
+    </svg>
+    <div class="brand__text">
+      <h1>QR Studio</h1>
+      <p>Çevrimdışı çalışan, sıfır bağımlılıklı QR kod stüdyosu</p>
+    </div>
+  </div>
+
+  <div class="topbar__actions">
+    <button type="button" class="btn btn--ghost" id="btnBatch" title="CSV'den toplu QR üret">
+      <span aria-hidden="true">📦</span> Toplu Üretim
+    </button>
+    <button type="button" class="btn btn--ghost" id="btnScanTest" title="Kamerayla tarama testi">
+      <span aria-hidden="true">📷</span> Tarama Testi
+    </button>
+    <button type="button" class="btn btn--icon" id="btnTheme" title="Karanlık / aydınlık mod" aria-label="Tema değiştir">
+      <span aria-hidden="true" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<main class="workspace">
+
+  <!-- ================= SOL PANEL: AYARLAR ================= -->
+  <section class="panel panel--left" aria-label="Ayarlar">
+
+    <div class="card">
+      <h2 class="card__title">İçerik</h2>
+      <div class="typetabs" id="typeTabs" role="tablist" aria-label="İçerik tipi"></div>
+      <div class="form" id="contentForm"></div>
+      <p class="hint" id="contentHint"></p>
+    </div>
+
+    <details class="card card--accordion" open>
+      <summary class="card__title">Şekiller</summary>
+      <div class="card__body">
+        <div class="field">
+          <label class="field__label">Nokta şekli</label>
+          <div class="shapegrid" id="dotShapes"></div>
+        </div>
+        <div class="field">
+          <label class="field__label">Köşe çerçevesi</label>
+          <div class="shapegrid" id="eyeFrameShapes"></div>
+        </div>
+        <div class="field">
+          <label class="field__label">Köşe içi</label>
+          <div class="shapegrid" id="eyeBallShapes"></div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="perCornerEyes">
+          <span>Her köşeyi ayrı ayarla</span>
+        </label>
+        <div class="percorner" id="perCornerPanel" hidden></div>
+      </div>
+    </details>
+
+    <details class="card card--accordion" open>
+      <summary class="card__title">Renkler</summary>
+      <div class="card__body">
+        <div class="row">
+          <div class="field field--half">
+            <label class="field__label" for="fgColor">Ön plan</label>
+            <div class="colorinput">
+              <input type="color" id="fgColor" value="#111827">
+              <input type="text" id="fgColorText" class="colorinput__text" spellcheck="false">
+            </div>
+          </div>
+          <div class="field field--half">
+            <label class="field__label" for="bgColor">Arka plan</label>
+            <div class="colorinput">
+              <input type="color" id="bgColor" value="#FFFFFF">
+              <input type="text" id="bgColorText" class="colorinput__text" spellcheck="false">
+            </div>
+          </div>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="transparentBg">
+          <span>Şeffaf arka plan <small>(PNG / SVG)</small></span>
+        </label>
+
+        <label class="switch">
+          <input type="checkbox" id="gradientEnabled">
+          <span>Gradient (degrade) renk</span>
+        </label>
+
+        <div class="subpanel" id="gradientPanel" hidden>
+          <div class="row">
+            <div class="field field--half">
+              <label class="field__label" for="gradColor1">Renk 1</label>
+              <input type="color" id="gradColor1" value="#6366F1">
+            </div>
+            <div class="field field--half">
+              <label class="field__label" for="gradColor2">Renk 2</label>
+              <input type="color" id="gradColor2" value="#EC4899">
+            </div>
+          </div>
+          <div class="row">
+            <div class="field field--half">
+              <label class="field__label" for="gradType">Tip</label>
+              <select id="gradType">
+                <option value="linear">Doğrusal</option>
+                <option value="radial">Dairesel</option>
+              </select>
+            </div>
+            <div class="field field--half">
+              <label class="field__label" for="gradAngle">Açı: <span id="gradAngleVal">45°</span></label>
+              <input type="range" id="gradAngle" min="0" max="360" value="45">
+            </div>
+          </div>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="eyeColorEnabled">
+          <span>Köşeler için ayrı renk</span>
+        </label>
+        <div class="subpanel" id="eyeColorPanel" hidden>
+          <div class="colorinput">
+            <input type="color" id="eyeColor" value="#111827">
+            <input type="text" id="eyeColorText" class="colorinput__text" spellcheck="false">
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card card--accordion">
+      <summary class="card__title">Logo</summary>
+      <div class="card__body">
+        <div class="logodrop" id="logoDrop">
+          <input type="file" id="logoFile" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden>
+          <div class="logodrop__empty" id="logoEmpty">
+            <span class="logodrop__icon" aria-hidden="true">🖼️</span>
+            <strong>Logo yükle</strong>
+            <small>PNG · JPG · SVG · WEBP — sürükleyip bırakabilirsiniz</small>
+          </div>
+          <div class="logodrop__preview" id="logoPreview" hidden>
+            <img id="logoImg" alt="Yüklenen logo önizlemesi">
+            <button type="button" class="btn btn--danger btn--sm" id="logoRemove">Kaldır</button>
+          </div>
+        </div>
+
+        <div class="subpanel" id="logoPanel" hidden>
+          <div class="field">
+            <label class="field__label" for="logoSize">Boyut: <span id="logoSizeVal">%22</span></label>
+            <input type="range" id="logoSize" min="8" max="30" value="22">
+            <p class="hint">Okunabilirlik için QR alanının %30'unu geçmez.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="logoBackdrop" checked>
+            <span>Logo arkasına dolgu ekle</span>
+          </label>
+          <div class="row" id="logoBackdropRow">
+            <div class="field field--half">
+              <label class="field__label" for="logoBgColor">Dolgu rengi</label>
+              <input type="color" id="logoBgColor" value="#FFFFFF">
+            </div>
+            <div class="field field--half">
+              <label class="switch switch--compact">
+                <input type="checkbox" id="logoRounded" checked>
+                <span>Köşeleri yuvarla</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card card--accordion">
+      <summary class="card__title">Çerçeve</summary>
+      <div class="card__body">
+        <label class="switch">
+          <input type="checkbox" id="frameEnabled">
+          <span>Çerçeve ekle</span>
+        </label>
+        <div class="subpanel" id="framePanel" hidden>
+          <div class="field">
+            <label class="field__label" for="frameStyle">Stil</label>
+            <select id="frameStyle">
+              <option value="scan-me-bottom">Altta yazı şeridi</option>
+              <option value="scan-me-top">Üstte yazı şeridi</option>
+              <option value="badge">Rozet (dolu zemin)</option>
+              <option value="border">Sade kenarlık</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="frameText">Yazı</label>
+            <input type="text" id="frameText" value="BENİ TARA" maxlength="28">
+          </div>
+          <div class="row">
+            <div class="field field--half">
+              <label class="field__label" for="frameColor">Çerçeve rengi</label>
+              <input type="color" id="frameColor" value="#111827">
+            </div>
+            <div class="field field--half">
+              <label class="field__label" for="frameTextColor">Yazı rengi</label>
+              <input type="color" id="frameTextColor" value="#FFFFFF">
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card card--accordion">
+      <summary class="card__title">Gelişmiş</summary>
+      <div class="card__body">
+        <div class="field">
+          <label class="field__label" for="ecLevel">Hata düzeltme seviyesi</label>
+          <select id="ecLevel">
+            <option value="L">L — %7 (en küçük kod)</option>
+            <option value="M" selected>M — %15 (dengeli)</option>
+            <option value="Q">Q — %25</option>
+            <option value="H">H — %30 (logo için önerilir)</option>
+          </select>
+          <p class="hint" id="ecHint"></p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="margin">Sessiz bölge (margin): <span id="marginVal">4</span> modül</label>
+          <input type="range" id="margin" min="0" max="10" value="4">
+        </div>
+        <div class="field">
+          <label class="field__label" for="bgRadius">Arka plan köşe yuvarlaması: <span id="bgRadiusVal">0</span></label>
+          <input type="range" id="bgRadius" min="0" max="8" step="0.5" value="0">
+        </div>
+      </div>
+    </details>
+
+  </section>
+
+  <!-- ================= ORTA: ÖNİZLEME ================= -->
+  <section class="panel panel--center" aria-label="Önizleme">
+    <div class="preview">
+      <div class="preview__stage" id="previewStage">
+        <div class="preview__svg" id="previewSvg"></div>
+        <div class="preview__placeholder" id="previewPlaceholder">
+          <span aria-hidden="true">✨</span>
+          <p>İçeriği doldurun, QR kodunuz anında burada belirsin.</p>
+        </div>
+      </div>
+
+      <div class="preview__meta" id="previewMeta" hidden>
+        <span class="chip" id="chipVersion">—</span>
+        <span class="chip" id="chipEc">—</span>
+        <span class="chip" id="chipMode">—</span>
+        <span class="chip" id="chipModules">—</span>
+      </div>
+
+      <div class="scanscore" id="scanScore" hidden>
+        <div class="scanscore__bar"><div class="scanscore__fill" id="scanScoreFill"></div></div>
+        <div class="scanscore__text" id="scanScoreText"></div>
+      </div>
+
+      <div class="preview__tools">
+        <button type="button" class="btn btn--ghost btn--sm" id="btnRandom" title="Rastgele şık bir tasarım üret">🎲 Şaşırt beni</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="btnShare" title="Ayarları bağlantı olarak kopyala">🔗 Ayar linki</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="btnReset" title="Tüm tasarım ayarlarını sıfırla">↺ Sıfırla</button>
+      </div>
+    </div>
+
+    <div class="alerts" id="alerts"></div>
+  </section>
+
+  <!-- ================= SAĞ PANEL: ÇIKTI ================= -->
+  <section class="panel panel--right" aria-label="Dışa aktarma">
+
+    <div class="card">
+      <h2 class="card__title">Hazır Şablonlar</h2>
+      <div class="presets" id="presets"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="card__title">İndir</h2>
+
+      <div class="field">
+        <label class="field__label" for="pngSize">PNG çözünürlüğü</label>
+        <select id="pngSize">
+          <option value="512">512 × 512 px</option>
+          <option value="1024" selected>1024 × 1024 px</option>
+          <option value="2048">2048 × 2048 px</option>
+          <option value="4096">4096 × 4096 px</option>
+          <option value="custom">Özel…</option>
+        </select>
+        <input type="number" id="pngSizeCustom" min="64" max="8192" step="8" value="1500" hidden>
+      </div>
+
+      <div class="downloads">
+        <button type="button" class="btn btn--primary" id="btnPng" disabled>
+          <span aria-hidden="true">⬇</span> PNG indir
+        </button>
+        <button type="button" class="btn btn--outline" id="btnSvg" disabled>
+          <span aria-hidden="true">⬇</span> SVG indir
+        </button>
+        <button type="button" class="btn btn--outline" id="btnPdf" disabled>
+          <span aria-hidden="true">⬇</span> PDF indir
+        </button>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="pdfWidth">PDF baskı genişliği: <span id="pdfWidthVal">80 mm</span></label>
+        <input type="range" id="pdfWidth" min="20" max="180" value="80">
+        <p class="hint">PDF vektöreldir — A4 sayfa ortasına yerleştirilir.</p>
+      </div>
+
+      <button type="button" class="btn btn--soft" id="btnSaveHistory" disabled>
+        <span aria-hidden="true">💾</span> Geçmişe kaydet
+      </button>
+      <p class="hint">Her indirme otomatik olarak geçmişe eklenir.</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card__title">Geçmiş Yedeği</h2>
+      <div class="downloads downloads--row">
+        <button type="button" class="btn btn--ghost btn--sm" id="btnExportHistory">↑ JSON'a aktar</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="btnImportHistory">↓ JSON'dan al</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- ================= GEÇMİŞ ================= -->
+<section class="history" id="history">
+  <div class="history__head">
+    <h2>Geçmiş <span class="badge" id="historyCount">0</span></h2>
+    <div class="history__actions">
+      <label class="switch switch--compact">
+        <input type="checkbox" id="favOnly">
+        <span>Sadece favoriler</span>
+      </label>
+      <button type="button" class="btn btn--danger btn--sm" id="btnClearHistory">Tümünü temizle</button>
+    </div>
+  </div>
+  <div class="history__list" id="historyList"></div>
+  <p class="history__empty" id="historyEmpty">Henüz kayıt yok — bir QR oluşturup indirdiğinizde burada birikecek.</p>
+</section>
+
+<footer class="footer">
+  <p>
+    Tamamen tarayıcınızda çalışır — hiçbir veri sunucuya gönderilmez.
+    QR matrisi (Reed-Solomon dahil), render, export ve ZIP yazıcı sıfırdan yazılmıştır.
+  </p>
+  <p class="footer__keys">
+    <kbd>Ctrl</kbd>+<kbd>S</kbd> PNG indir · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> SVG indir ·
+    <kbd>Ctrl</kbd>+<kbd>Z</kbd> son ayarı geri al · <kbd>Ctrl</kbd>+<kbd>R</kbd> rastgele tasarım
+  </p>
+</footer>
+
+<!-- ================= TOPLU ÜRETİM MODALI ================= -->
+<div class="modal" id="batchModal" hidden>
+  <div class="modal__backdrop" data-close="1"></div>
+  <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="batchTitle">
+    <div class="modal__head">
+      <h2 id="batchTitle">Toplu Üretim</h2>
+      <button type="button" class="btn btn--icon" data-close="1" aria-label="Kapat">✕</button>
+    </div>
+    <div class="modal__body">
+      <p class="hint">
+        Her satırda bir içerik olan bir <strong>.csv</strong> dosyası yükleyin.
+        İkinci sütun varsa dosya adı olarak kullanılır. Mevcut tasarım ayarlarınız tüm kodlara uygulanır.
+      </p>
+
+      <div class="logodrop" id="csvDrop">
+        <input type="file" id="csvFile" accept=".csv,text/csv,text/plain" hidden>
+        <div class="logodrop__empty">
+          <span class="logodrop__icon" aria-hidden="true">📄</span>
+          <strong>CSV dosyası seç</strong>
+          <small>veya buraya sürükleyip bırakın</small>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label">Ya da içerikleri satır satır yapıştırın</label>
+        <textarea id="batchText" rows="5" placeholder="https://ornek.com/1&#10;https://ornek.com/2&#10;https://ornek.com/3"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="field field--half">
+          <label class="field__label" for="batchFormat">Format</label>
+          <select id="batchFormat">
+            <option value="png">PNG</option>
+            <option value="svg">SVG</option>
+          </select>
+        </div>
+        <div class="field field--half">
+          <label class="field__label" for="batchSize">PNG boyutu</label>
+          <select id="batchSize">
+            <option value="512">512 px</option>
+            <option value="1024" selected>1024 px</option>
+            <option value="2048">2048 px</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="progress" id="batchProgress" hidden>
+        <div class="progress__bar"><div class="progress__fill" id="batchProgressFill"></div></div>
+        <div class="progress__text" id="batchProgressText"></div>
+      </div>
+
+      <div class="alerts" id="batchAlerts"></div>
+    </div>
+    <div class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close="1">Vazgeç</button>
+      <button type="button" class="btn btn--primary" id="btnBatchRun">ZIP olarak üret</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= KAMERA TESTİ MODALI ================= -->
+<div class="modal" id="scanModal" hidden>
+  <div class="modal__backdrop" data-close="1"></div>
+  <div class="modal__box modal__box--narrow" role="dialog" aria-modal="true" aria-labelledby="scanTitle">
+    <div class="modal__head">
+      <h2 id="scanTitle">Tarama Testi</h2>
+      <button type="button" class="btn btn--icon" data-close="1" aria-label="Kapat">✕</button>
+    </div>
+    <div class="modal__body">
+      <p class="hint">Oluşturduğunuz QR'ı ekranda veya baskıda kameraya gösterin; okunan içeriği karşılaştıralım.</p>
+      <video id="scanVideo" playsinline muted></video>
+      <div class="alerts" id="scanAlerts"></div>
+    </div>
+    <div class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close="1">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/qr-encoder.js"></script>
+<script src="js/qr-renderer.js"></script>
+<script src="js/qr-export.js"></script>
+<script src="js/content-types.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/history-ui.js"></script>
+<script src="js/batch.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

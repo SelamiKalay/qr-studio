@@ -1,0 +1,12 @@
+# İmza anahtarı — ASLA paylaşılmaz
+*.keystore
+*.jks
+
+# Derleme çıktıları
+*.apk
+*.aab
+build/
+dist/
+
+# Yerel araçlar
+node_modules/

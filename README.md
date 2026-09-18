@@ -1,31 +1,34 @@
 # QR Studio
 
-**Canlı demo:** https://selamikalay.github.io/qr-studio/
+**English** | [Türkçe](README.tr.md)
 
-> **English:** QR Studio is a customizable QR code generator — a dependency-free web app with its own QR encoder, custom dot/eye shapes, gradients, logos, frames, batch generation and PNG/SVG/PDF export — also packaged as a lightweight native Android WebView app.
+**Live demo:** https://selamikalay.github.io/qr-studio/
 
-![QR Studio ekran görüntüsü](docs/ekran-goruntusu.png)
+![QR Studio screenshot](docs/ekran-goruntusu.png)
 
-Logo, şekil, renk ve çerçeve özelleştirmeli; **PNG / SVG / PDF** çıktı veren, geçmişi
-tarayıcıda saklayan QR kod stüdyosu.
+A QR code studio with logo, shape, color and frame customization that exports to
+**PNG / SVG / PDF** and keeps its history in the browser. The user interface is in
+Turkish.
 
-> **Sıfır bağımlılık.** Ne npm paketi, ne CDN, ne backend. QR matrisi (Reed-Solomon
-> hata düzeltmesi dahil), SVG render motoru, PDF yazıcı ve ZIP yazıcı bu projede
-> sıfırdan yazıldı. Dosyaları indirip çift tıklayarak bile çalışır; internet gerekmez.
+> **Zero dependencies.** No npm packages, no CDN, no backend. The QR matrix
+> (including Reed-Solomon error correction), the SVG renderer, the PDF writer and the
+> ZIP writer were all written from scratch in this project. It even works by
+> downloading the files and double-clicking; no internet required.
 
 ---
 
-## Çalıştırma
+## Running
 
-Projeyle birlikte gelen, bağımlılıksız sunucu (yalnızca Node gerekir, npm kurulumu yok):
+With the bundled dependency-free server (only Node is required, no npm install):
 
 ```bash
 node dev-server.js
 ```
 
-Ardından tarayıcıda `http://localhost:8000` adresini açın. Farklı port için: `node dev-server.js 5500`
+Then open `http://localhost:8000` in your browser. For a different port:
+`node dev-server.js 5500`
 
-Alternatifler:
+Alternatives:
 
 ```bash
 npx serve .
@@ -35,145 +38,145 @@ npx serve .
 python -m http.server 8000
 ```
 
-> `index.html`'i doğrudan çift tıklayarak da açabilirsiniz. Yalnızca **kamerayla tarama
-> testi** özelliği tarayıcı güvenlik kuralları gereği `http://localhost` üzerinden çalışır.
+> You can also open `index.html` directly by double-clicking it. Only the **camera
+> scan test** requires `http://localhost` because of browser security rules.
 
 ---
 
-## Özellikler
+## Features
 
-### İçerik tipleri
-Web adresi · Düz metin · E-posta · Telefon · SMS · WiFi · Kartvizit (vCard) ·
-Konum (geo) · Etkinlik (VEVENT) · Sosyal medya kısayolları
+### Content types
+Web address · Plain text · E-mail · Phone · SMS · WiFi · Contact card (vCard) ·
+Location (geo) · Event (VEVENT) · Social media shortcuts
 
-Her tip kendi form şemasını ve standart QR yükünü `js/content-types.js` içinde tanımlar;
-WiFi ve vCard için ayraç kaçışları (`\;` `\,` `\:`) doğru uygulanır.
+Each type defines its own form schema and standard QR payload in
+`js/content-types.js`; delimiter escaping for WiFi and vCard (`\;` `\,` `\:`) is
+applied correctly.
 
-### Görsel özelleştirme
-- **Nokta şekli:** kare, yuvarlak, damla, nokta, elmas, classy — komşu modüllere göre
-  akıllı köşe yuvarlama (bitişik modüller birleşir, dışa bakan köşeler yuvarlanır)
-- **Köşe çerçevesi:** kare, yuvarlak, daire, damla, ters damla
-- **Köşe içi:** kare, yuvarlak, daire, elmas, damla
-- Üç köşe ayrı ayrı ayarlanabilir
-- **Renk:** düz renk veya gradient (doğrusal/dairesel, açı ayarlı), köşeler için ayrı renk
-- **Şeffaf arka plan**, arka plan köşe yuvarlaması, sessiz bölge (margin) ayarı
-- **Çerçeve:** altta/üstte yazı şeridi, rozet, sade kenarlık + serbest yazı
+### Visual customization
+- **Dot shape:** square, rounded, drop, dot, diamond, classy — smart corner rounding
+  based on neighboring modules (adjacent modules merge, outward-facing corners are rounded)
+- **Eye frame:** square, rounded, circle, drop, reversed drop
+- **Eye ball:** square, rounded, circle, diamond, drop
+- All three corners can be styled individually
+- **Color:** solid or gradient (linear/radial, adjustable angle), separate color for the eyes
+- **Transparent background**, rounded background corners, adjustable quiet zone (margin)
+- **Frame:** text band at the bottom/top, badge, plain border + free text
 
 ### Logo
-- PNG / JPG / SVG / WEBP yükleme (sürükle-bırak destekli)
-- QR alanının **en fazla %30'u** ile sınırlı, otomatik ortalanır
-- Logo eklenince hata düzeltme seviyesi otomatik **H (%30)** olur ve seviye kilitlenir
-- İsteğe bağlı dolgu zemini + köşe yuvarlama
+- PNG / JPG / SVG / WEBP upload (drag and drop supported)
+- Limited to **at most 30%** of the QR area, centered automatically
+- Adding a logo switches the error correction level to **H (30%)** and locks it
+- Optional backdrop + rounded corners
 
-### Taranabilirlik skoru
-Her değişiklikte 0–100 arası bir skor ve gerekçeli uyarılar üretilir:
-WCAG kontrast oranı, negatif (açık desen / koyu zemin) kullanımı, dar sessiz bölge,
-logo oranı, şeffaf zemin ve içerik yoğunluğu değerlendirilir.
+### Scannability score
+Every change produces a 0–100 score with explained warnings based on WCAG contrast
+ratio, use of inverted colors (light pattern on dark background), narrow quiet zone,
+logo size, transparent background and content density.
 
-### Dışa aktarma
-| Format | Nasıl üretiliyor |
+### Export
+| Format | How it is produced |
 |---|---|
-| **PNG** | SVG → `Image` → `canvas` → `toBlob`. 512 / 1024 / 2048 / 4096 veya özel çözünürlük. Şeffaflık korunur. |
-| **SVG** | Üretilen SVG doğrudan `Blob` olarak. Vektörel, sınırsız büyütülebilir. |
-| **PDF** | **Gerçek vektör.** Çizim yolları PDF içerik akışına birebir çevrilir; gradient PDF shading pattern'ı olarak, çerçeve yazısı Helvetica ile gömülür. A4 ortasına, seçilen mm genişliğinde yerleşir. |
+| **PNG** | SVG → `Image` → `canvas` → `toBlob`. 512 / 1024 / 2048 / 4096 or custom resolution. Transparency is preserved. |
+| **SVG** | The generated SVG as a `Blob`. Vector, infinitely scalable. |
+| **PDF** | **True vector output.** Drawing paths are translated one-to-one into the PDF content stream; gradients become a PDF shading pattern and the frame text is embedded with Helvetica. Placed in the center of an A4 page at the chosen width in mm. |
 
-### Toplu üretim
-CSV yükleyin (veya satırları yapıştırın) → mevcut tasarımla tüm kodlar üretilir →
-tek `.zip` olarak iner. ZIP dosyası (CRC32 dahil) sıfırdan yazılır; PNG zaten
-sıkıştırılmış olduğu için STORE yöntemi kullanılır.
+### Batch generation
+Upload a CSV (or paste lines) → all codes are generated with the current design →
+downloaded as a single `.zip`. The ZIP file (including CRC32) is written from
+scratch; the STORE method is used since PNG is already compressed.
 
-CSV biçimi — ilk sütun içerik, ikinci sütun (varsa) dosya adı etiketi:
+CSV format — first column is the content, second column (optional) is the file name label:
 
 ```csv
 icerik;etiket
-https://ornek.com/a;Kampanya A
-https://ornek.com/b;Kampanya B
+https://example.com/a;Campaign A
+https://example.com/b;Campaign B
 ```
 
-Ayraç (`,` `;` sekme) otomatik algılanır, tırnaklı alanlar desteklenir.
+The delimiter (`,` `;` tab) is detected automatically and quoted fields are supported.
 
-### Geçmiş
-Üretilen her kod ayarları ve küçük önizlemesiyle **IndexedDB**'ye kaydedilir.
-Kartına tıklayınca tüm tasarım ve form alanlarıyla birlikte düzenlemeye açılır.
-Favorileme, silme, tümünü temizleme ve `.json` olarak yedekleme/geri yükleme mevcuttur.
-Son kullanılan ayarlar ayrıca `localStorage`'da tutulur ve açılışta geri yüklenir.
+### History
+Every generated code is saved to **IndexedDB** along with its settings and a small
+preview. Clicking a card reopens it for editing with its full design and form fields.
+Favorites, deletion, clear-all and `.json` backup/restore are available. The last
+used settings are also kept in `localStorage` and restored on startup.
 
-### Diğer
-- Karanlık / aydınlık mod (sistem tercihini izler, seçim hatırlanır)
-- Hazır şablonlar: Klasik, Yumuşak, Instagram, Kurumsal, Gece, Afiş
-- "Şaşırt beni" — rastgele uyumlu tasarım
-- Ayarları bağlantı olarak paylaşma (adres çubuğu `#` parçasına kodlanır)
-- Kamerayla tarama testi (`BarcodeDetector` destekleyen tarayıcılarda)
+### Other
+- Dark / light mode (follows the system preference, choice is remembered)
+- Presets: Classic, Soft, Instagram, Corporate, Night, Poster
+- "Surprise me" — a random harmonious design
+- Share settings as a link (encoded in the `#` fragment of the URL)
+- Camera scan test (in browsers that support `BarcodeDetector`)
 
-### Klavye kısayolları
-| Kısayol | İşlev |
+### Keyboard shortcuts
+| Shortcut | Action |
 |---|---|
-| `Ctrl` + `S` | PNG indir |
-| `Ctrl` + `Shift` + `S` | SVG indir |
-| `Ctrl` + `Z` | Son ayarı geri al |
-| `Alt` + `R` | Rastgele tasarım |
-| `Esc` | Açık pencereyi kapat |
+| `Ctrl` + `S` | Download PNG |
+| `Ctrl` + `Shift` + `S` | Download SVG |
+| `Ctrl` + `Z` | Undo last setting change |
+| `Alt` + `R` | Random design |
+| `Esc` | Close the open dialog |
 
 ---
 
-## Android uygulaması (APK)
+## Android app (APK)
 
-Aynı kod tabanı, native bir Android kabuğu içinde çalışır. Gradle, Android Studio
-veya npm gerekmez — APK doğrudan Android SDK araçlarıyla (`aapt2 → javac → d8 →
-zipalign → apksigner`) derlenir.
+The same code base runs inside a native Android shell. No Gradle, Android Studio or
+npm is needed — the APK is built directly with the Android SDK tools
+(`aapt2 → javac → d8 → zipalign → apksigner`).
 
-### Derleme
+### Build
 
 ```bash
 powershell -ExecutionPolicy Bypass -File build-apk.ps1
 ```
 
-Çıktı: proje kökünde `QR-Studio.apk` (~120 KB).
+Output: `QR-Studio.apk` in the project root (~120 KB).
 
-Gereksinimler: JDK 17+ (`JAVA_HOME`) ve Android SDK (`ANDROID_HOME`) içinde
-`build-tools` + bir `platforms/android-XX`. Derleme, geçici bir ASCII yol altında
-yapılır (aapt2 Windows'ta Türkçe karakter içeren yolları açamıyor).
+Requirements: JDK 17+ (`JAVA_HOME`) and the Android SDK (`ANDROID_HOME`) with
+`build-tools` and a `platforms/android-XX`. The build runs under a temporary ASCII
+path (aapt2 on Windows cannot open paths containing Turkish characters).
 
-### Telefona kurma
+### Installing on a phone
 
-Telefonda bir kez: **Ayarlar → Telefon hakkında → Yapı numarası**na 7 kez dokunun,
-sonra **Ayarlar → Geliştirici seçenekleri → USB hata ayıklama**yı açın.
-Kabloyu takıp telefondaki izin penceresini onaylayın, ardından:
+Once on the phone: tap **Settings → About phone → Build number** 7 times, then enable
+**Settings → Developer options → USB debugging**. Connect the cable, accept the
+permission prompt on the phone, then:
 
 ```bash
 powershell -ExecutionPolicy Bypass -File install-apk.ps1 -Launch
 ```
 
-Betik cihazı bulur, model/Android/WebView sürümünü yazar, APK'yı kurar ve açar.
-`-Logs` eklerseniz kurulumdan sonra logcat'i izler.
+The script finds the device, prints the model/Android/WebView version, installs and
+launches the APK. Add `-Logs` to follow logcat after installation.
 
-APK'yı telefona kopyalayıp dosya yöneticisinden de kurabilirsiniz (bu durumda
-"bilinmeyen kaynaklardan yükleme" izni istenir).
+You can also copy the APK to the phone and install it from a file manager (this
+requires allowing installs from unknown sources).
 
-### Native tarafta neler var
+### What happens on the native side
 
-| Konu | Çözüm |
+| Topic | Solution |
 |---|---|
-| Sayfaların servisi | Varlıklar `assets/www` içinden, `shouldInterceptRequest` ile sanal bir **https** kaynağı üzerinden sunulur. `file://` kullanılsaydı IndexedDB engellenir, geçmiş çalışmazdı. |
-| İnternet izni | **Yok.** Tüm istekler uygulama içinde karşılanır; APK ağ erişimi isteyemez. |
-| İndirme | WebView `blob:` indirmelerini desteklemez. Dosyalar JS köprüsü üzerinden 512 KB'lık parçalar hâlinde native tarafa aktarılıp **MediaStore** ile İndirilenler klasörüne yazılır (Android 10+ için izin gerekmez). |
-| Logo / CSV seçimi | `onShowFileChooser` ile sistem dosya seçici. |
-| Kamera | `onPermissionRequest` + çalışma anı CAMERA izni. Sanal kaynak https olduğu için `getUserMedia` ve `BarcodeDetector` güvenli bağlam şartını sağlar — tarama testi telefonda masaüstünden daha iyi çalışır. |
-| Geri tuşu | Önce açık pencereyi kapatır, sonra çift basışla çıkar. |
-| Tema | Sistem karanlık moduna göre pencere ve durum çubuğu renklenir. |
-| İkon | `tools/make-icons.js`, Node'un zlib'i ile PNG'leri sıfırdan yazar; uyarlanabilir (adaptive) ikon zemini vektör gradienttir. |
+| Serving pages | Assets are served from `assets/www` through a virtual **https** origin via `shouldInterceptRequest`. With `file://`, IndexedDB would be blocked and history would not work. |
+| Internet permission | **None.** All requests are handled inside the app; the APK cannot access the network. |
+| Downloads | WebView does not support `blob:` downloads. Files are passed to the native side through a JS bridge in 512 KB chunks and written to the Downloads folder via **MediaStore** (no permission needed on Android 10+). |
+| Logo / CSV picking | System file picker via `onShowFileChooser`. |
+| Camera | `onPermissionRequest` + runtime CAMERA permission. Because the virtual origin is https, `getUserMedia` and `BarcodeDetector` meet the secure-context requirement — the scan test works better on the phone than on desktop. |
+| Back button | Closes an open dialog first, then exits on double press. |
+| Theme | Window and status bar colors follow the system dark mode. |
+| Icon | `tools/make-icons.js` writes the PNGs from scratch using Node's zlib; the adaptive icon background is a vector gradient. |
 
-### İmzalama
+### Signing
 
-İlk derlemede `android/qrstudio.keystore` üretilir (parola: `qrstudio`).
-**Bu dosyayı saklayın** — güncellemelerin aynı anahtarla imzalanması gerekir,
-aksi hâlde telefondaki uygulamayı kaldırmadan üzerine kuramazsınız.
-Bu yerel bir geliştirme anahtarıdır; Play Store'a yükleme için ayrı bir
-yayın anahtarı oluşturun.
+The first build generates `android/qrstudio.keystore` (password: `qrstudio`).
+**Keep this file** — updates must be signed with the same key, otherwise you cannot
+install over the existing app without uninstalling it first. This is a local
+development key; create a separate release key for the Play Store.
 
 ---
 
-## Klasör yapısı
+## Project structure
 
 ```
 .
@@ -181,87 +184,88 @@ yayın anahtarı oluşturun.
 ├── css/
 │   └── style.css
 ├── js/
-│   ├── qr-encoder.js       # Matris üretimi: mod seçimi, Reed-Solomon, blok interleaving, maskeleme
-│   ├── qr-renderer.js      # Matris → çizim komutları → SVG (şekil, gradient, logo, çerçeve)
-│   ├── qr-export.js        # PNG / SVG / PDF dışa aktarma
-│   ├── content-types.js    # İçerik tipi şemaları ve biçimlendiricileri
+│   ├── qr-encoder.js       # Matrix generation: mode selection, Reed-Solomon, block interleaving, masking
+│   ├── qr-renderer.js      # Matrix → drawing commands → SVG (shapes, gradient, logo, frame)
+│   ├── qr-export.js        # PNG / SVG / PDF export
+│   ├── content-types.js    # Content type schemas and formatters
 │   ├── storage.js          # IndexedDB + localStorage
-│   ├── history-ui.js       # Geçmiş listesi arayüzü
-│   ├── batch.js            # CSV ayrıştırma + ZIP yazıcı + toplu üretim
-│   └── app.js              # Durum yönetimi, form, canlı önizleme, olaylar
-├── assets/fonts/           # (opsiyonel) yerel font dosyaları için
-├── dev-server.js           # Bağımlılıksız yerel statik sunucu
+│   ├── history-ui.js       # History list UI
+│   ├── batch.js            # CSV parsing + ZIP writer + batch generation
+│   └── app.js              # State management, form, live preview, events
+├── assets/fonts/           # (optional) local font files
+├── dev-server.js           # Dependency-free local static server
 │
-├── android/                # Android uygulaması
+├── android/                # Android app
 │   ├── AndroidManifest.xml
 │   ├── java/com/qrstudio/app/MainActivity.java
-│   ├── res/                # ikonlar, temalar, metinler
-│   └── qrstudio.keystore   # imza anahtarı (ilk derlemede üretilir)
+│   └── res/                # icons, themes, strings
 ├── tools/
-│   └── make-icons.js       # PNG ikon üreteci (Node zlib ile)
-├── build-apk.ps1           # APK derleyici (Gradle'sız)
-├── install-apk.ps1         # Telefona kurulum
+│   └── make-icons.js       # PNG icon generator (with Node zlib)
+├── build-apk.ps1           # APK builder (without Gradle)
+├── install-apk.ps1         # Installs to a phone
 └── README.md
 ```
 
 ---
 
-## Nasıl çalışıyor
+## How it works
 
-### 1. Matris üretimi — `qr-encoder.js`
-ISO/IEC 18004'e göre yazılmıştır:
+### 1. Matrix generation — `qr-encoder.js`
+Written according to ISO/IEC 18004:
 
-1. **Mod seçimi** — içerik sayısal / alfanümerik / byte (UTF-8) olarak analiz edilir;
-   en verimli mod seçilir (`8675309` sayısal modda byte modunun yarısı kadar yer kaplar).
-2. **Versiyon seçimi** — içeriğin sığdığı en küçük versiyon (1–40) bulunur.
-3. **Bit akışı** — mod göstergesi + karakter sayısı + veri + sonlandırıcı +
-   `0xEC / 0x11` dolgu baytları.
-4. **Reed-Solomon** — GF(256) üzerinde (primitif polinom `0x11D`) jeneratör polinomuyla
-   sentetik bölme ile hata düzeltme kod sözcükleri üretilir.
-5. **Blok interleaving** — veri ve EC blokları standart sıraya göre serpiştirilir.
-6. **Matris** — bulucu desenleri, ayırıcılar, zamanlama ve hizalama desenleri,
-   format (BCH 15,5) ve versiyon (BCH 18,6) bilgileri yerleştirilir; veri zigzag
-   düzeninde yazılır.
-7. **Maskeleme** — 8 maskenin tümü uygulanıp ISO'daki 4 ceza kuralına göre puanlanır,
-   en düşük puanlı maske seçilir.
+1. **Mode selection** — the content is analyzed as numeric / alphanumeric / byte
+   (UTF-8) and the most efficient mode is chosen (`8675309` takes half the space in
+   numeric mode compared to byte mode).
+2. **Version selection** — the smallest version (1–40) that fits the content is found.
+3. **Bit stream** — mode indicator + character count + data + terminator +
+   `0xEC / 0x11` padding bytes.
+4. **Reed-Solomon** — error correction codewords are produced over GF(256)
+   (primitive polynomial `0x11D`) by synthetic division with the generator polynomial.
+5. **Block interleaving** — data and EC blocks are interleaved in the standard order.
+6. **Matrix** — finder patterns, separators, timing and alignment patterns, format
+   (BCH 15,5) and version (BCH 18,6) information are placed; data is written in the
+   zigzag order.
+7. **Masking** — all 8 masks are applied and scored with the 4 penalty rules from the
+   ISO standard; the mask with the lowest score is chosen.
 
-Doğrulama: 32 değerlik format bilgisi tablosu, bilinen versiyon BCH değerleri,
-Reed-Solomon kalanının sıfır olması ve **v1–v40 arası tam kapasiteye kadar
-kodla-çöz round-trip'i** ile test edilmiştir.
+Verification: tested against the 32-entry format information table, known version
+BCH values, a zero Reed-Solomon remainder and an **encode-decode round trip up to full
+capacity for versions 1–40**.
 
-### 2. Render — `qr-renderer.js`
-Matris, `{tip, path, renk}` biçiminde bir çizim komutları listesine dönüştürülür.
-Tüm yollar yalnızca **M / L / C / Z** komutları kullanır (yaylar kübik bezier'a çevrilir) —
-bu sayede aynı liste hem SVG'ye hem de PDF içerik akışına çevrilebilir.
-Köşe (finder) desenleri halka olarak `fill-rule="evenodd"` ile çizilir.
+### 2. Rendering — `qr-renderer.js`
+The matrix is converted into a list of drawing commands of the form
+`{type, path, color}`. All paths use only the **M / L / C / Z** commands (arcs are
+converted to cubic Béziers) — so the same list can be turned into both SVG and a PDF
+content stream. Finder patterns are drawn as rings with `fill-rule="evenodd"`.
 
 ### 3. Export — `qr-export.js`
-PDF, sayfa koordinat sistemini `[s 0 0 -s ox oy] cm` matrisiyle çevirip tasarım
-koordinatlarını doğrudan kullanır; metin `1 0 0 -1 x y Tm` ile ters çevrilerek düz durur;
-gradient, aynı matrisi taşıyan bir `PatternType 2` shading pattern'ı olarak tanımlanır.
-xref tablosu byte ofsetleriyle hesaplanır.
+The PDF flips the page coordinate system with the matrix `[s 0 0 -s ox oy] cm` and
+uses the design coordinates directly; text is flipped back upright with
+`1 0 0 -1 x y Tm`; the gradient is defined as a `PatternType 2` shading pattern
+carrying the same matrix. The xref table is computed with byte offsets.
 
 ---
 
-## Bilinen sınırlar
+## Known limitations
 
-- **PDF yazı tipi:** Gömülü Helvetica (WinAnsi) kullanıldığı için çerçeve yazısındaki
-  `ğ ş İ ı` harfleri PDF'te `g s I i` olarak yazılır. PNG ve SVG çıktılarında böyle bir
-  sınır yoktur.
-- **Kamerayla tarama testi** `BarcodeDetector` API'sini gerektirir; masaüstü Chrome'un
-  Windows sürümünde genelde bulunmaz. Bu durumda arayüz sizi bilgilendirir — en gerçekçi
-  test zaten telefon kamerasıdır.
-- **Şeffaf arka planlı PDF** desteklenmez; PDF her zaman zemin rengini basar.
-- Logo PDF'e JPEG olarak gömülür (şeffaflık, seçtiğiniz dolgu rengiyle doldurulur).
-- Yazı tipi olarak sistem fontları kullanılır (CDN'e bağımlı kalmamak için).
-  Kendi fontunuzu kullanmak isterseniz `assets/fonts/` içine koyup `css/style.css`
-  içinde `@font-face` tanımlayın.
+- **PDF font:** Because the embedded Helvetica (WinAnsi) is used, the letters
+  `ğ ş İ ı` in the frame text are written as `g s I i` in the PDF. PNG and SVG exports
+  have no such limitation.
+- **Camera scan test** requires the `BarcodeDetector` API, which is usually missing in
+  desktop Chrome on Windows. The UI tells you when this is the case — the most
+  realistic test is a phone camera anyway.
+- **PDF with a transparent background** is not supported; the PDF always prints the
+  background color.
+- The logo is embedded in the PDF as JPEG (transparency is filled with the chosen
+  backdrop color).
+- System fonts are used (to avoid depending on a CDN). To use your own font, place it
+  in `assets/fonts/` and declare it with `@font-face` in `css/style.css`.
 
 ---
 
-## Gizlilik
+## Privacy
 
-Hiçbir veri sunucuya gönderilmez. İçerik, logolar ve geçmiş yalnızca kendi
-tarayıcınızın IndexedDB ve localStorage alanında saklanır. WiFi QR kodlarındaki şifrenin
-QR içinde **açık metin** olarak yer aldığını unutmayın — bu QR standardının gereğidir,
-paylaşırken dikkatli olun.
+No data is sent to any server. Content, logos and history are stored only in your own
+browser's IndexedDB and localStorage. Keep in mind that the password in a WiFi QR code
+is stored in the QR as **plain text** — this is how the QR standard works, so be
+careful when sharing it.

@@ -1,5 +1,7 @@
 # QR Studio
 
+> **English:** QR Studio is a customizable QR code generator — a dependency-free web app with its own QR encoder, custom dot/eye shapes, gradients, logos, frames, batch generation and PNG/SVG/PDF export — also packaged as a lightweight native Android WebView app.
+
 Logo, şekil, renk ve çerçeve özelleştirmeli; **PNG / SVG / PDF** çıktı veren, geçmişi
 tarayıcıda saklayan QR kod stüdyosu.
 

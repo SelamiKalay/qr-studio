@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QR Studio</string>
+    <string name="saved_to">İndirilenler klasörüne kaydedildi:</string>
+    <string name="save_failed">Kaydedilemedi:</string>
+    <string name="load_failed">Uygulama dosyaları yüklenemedi.</string>
+    <string name="exit_hint">Çıkmak için tekrar geri tuşuna basın</string>
+</resources>

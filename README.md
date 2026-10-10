@@ -192,7 +192,7 @@ development key; create a separate release key for the Play Store.
 │   ├── history-ui.js       # History list UI
 │   ├── batch.js            # CSV parsing + ZIP writer + batch generation
 │   └── app.js              # State management, form, live preview, events
-├── assets/fonts/           # (optional) local font files
+├── docs/                   # Screenshot and the original project plan (Turkish)
 ├── dev-server.js           # Dependency-free local static server
 │
 ├── android/                # Android app
@@ -258,8 +258,9 @@ carrying the same matrix. The xref table is computed with byte offsets.
   background color.
 - The logo is embedded in the PDF as JPEG (transparency is filled with the chosen
   backdrop color).
-- System fonts are used (to avoid depending on a CDN). To use your own font, place it
-  in `assets/fonts/` and declare it with `@font-face` in `css/style.css`.
+- System fonts are used (to avoid depending on a CDN). To use your own font, put the
+  file in a folder such as `assets/fonts/` and declare it with `@font-face` in
+  `css/style.css`.
 
 ---
 

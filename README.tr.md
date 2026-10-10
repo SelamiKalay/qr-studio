@@ -189,7 +189,7 @@ yayın anahtarı oluşturun.
 │   ├── history-ui.js       # Geçmiş listesi arayüzü
 │   ├── batch.js            # CSV ayrıştırma + ZIP yazıcı + toplu üretim
 │   └── app.js              # Durum yönetimi, form, canlı önizleme, olaylar
-├── assets/fonts/           # (opsiyonel) yerel font dosyaları için
+├── docs/                   # Ekran görüntüsü ve ilk proje planı
 ├── dev-server.js           # Bağımlılıksız yerel statik sunucu
 │
 ├── android/                # Android uygulaması
@@ -254,8 +254,8 @@ xref tablosu byte ofsetleriyle hesaplanır.
 - **Şeffaf arka planlı PDF** desteklenmez; PDF her zaman zemin rengini basar.
 - Logo PDF'e JPEG olarak gömülür (şeffaflık, seçtiğiniz dolgu rengiyle doldurulur).
 - Yazı tipi olarak sistem fontları kullanılır (CDN'e bağımlı kalmamak için).
-  Kendi fontunuzu kullanmak isterseniz `assets/fonts/` içine koyup `css/style.css`
-  içinde `@font-face` tanımlayın.
+  Kendi fontunuzu kullanmak isterseniz dosyayı örneğin `assets/fonts/` adlı bir
+  klasöre koyup `css/style.css` içinde `@font-face` ile tanımlayın.
 
 ---
 

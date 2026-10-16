@@ -588,8 +588,16 @@
   function capacityFor(version, ecLevel, mode) {
     mode = mode || MODE_BYTE;
     var bits = dataCapacityBits(version, ecLevel) - 4 - charCountBits(mode, version);
-    if (mode === MODE_NUMERIC) return Math.floor(bits / 10) * 3;
-    if (mode === MODE_ALNUM) return Math.floor(bits / 11) * 2;
+    var rem;
+    if (mode === MODE_NUMERIC) {
+      // 3 rakam = 10 bit; artan bitlere 2 rakam (7 bit) veya 1 rakam (4 bit) sığar
+      rem = bits % 10;
+      return Math.floor(bits / 10) * 3 + (rem >= 7 ? 2 : rem >= 4 ? 1 : 0);
+    }
+    if (mode === MODE_ALNUM) {
+      // 2 karakter = 11 bit; artan 6 bite 1 karakter daha sığar
+      return Math.floor(bits / 11) * 2 + (bits % 11 >= 6 ? 1 : 0);
+    }
     return Math.floor(bits / 8);
   }
 

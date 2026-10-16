@@ -1,0 +1,32 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  node-test:
+    name: node:test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22", "24"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Uctan uca testler uretilen QR'lari bagimsiz bir okuyucuyla cozer:
+      # zbarimg (QR okuyucu), rsvg-convert (SVG->PNG), pdftoppm (PDF->PNG)
+      - name: QR okuyucu ve donusturuculer
+        run: sudo apt-get update -q && sudo apt-get install -y -q zbar-tools librsvg2-bin poppler-utils
+
+      - name: Sozdizimi kontrolu
+        run: for f in js/*.js tools/*.js dev-server.js; do node --check "$f"; done
+
+      - name: Testler
+        run: node --test 'tests/**/*.test.js'

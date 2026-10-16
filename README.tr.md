@@ -197,6 +197,7 @@ yayın anahtarı oluşturun.
 │   ├── java/com/qrstudio/app/MainActivity.java
 │   ├── res/                # ikonlar, temalar, metinler
 │   └── qrstudio.keystore   # imza anahtarı (ilk derlemede üretilir)
+├── tests/                  # node:test birim ve uçtan uca testler
 ├── tools/
 │   └── make-icons.js       # PNG ikon üreteci (Node zlib ile)
 ├── build-apk.ps1           # APK derleyici (Gradle'sız)
@@ -240,6 +241,27 @@ PDF, sayfa koordinat sistemini `[s 0 0 -s ox oy] cm` matrisiyle çevirip tasarı
 koordinatlarını doğrudan kullanır; metin `1 0 0 -1 x y Tm` ile ters çevrilerek düz durur;
 gradient, aynı matrisi taşıyan bir `PatternType 2` shading pattern'ı olarak tanımlanır.
 xref tablosu byte ofsetleriyle hesaplanır.
+
+## Testler
+
+`js/` modülleri için Node'un yerleşik test çalıştırıcısı (`node:test`) ile yazılmış
+testler `tests/` klasöründedir; hiçbir npm paketi gerekmez (Node 22+).
+
+```bash
+node --test 'tests/**/*.test.js'
+```
+
+- **Kodlayıcı:** ISO/IEC 18004 tablolarındaki format/versiyon bitleri, Reed-Solomon
+  örneği, kapasite sınırları ve blok yapısı
+- **Uçtan uca:** Üretilen QR'lar bağımsız bir okuyucuyla (zbar) çözülür — dört hata
+  düzeltme seviyesi, 8 maske, versiyon 1–40, Türkçe/emoji içerik; her nokta ve göz
+  şekliyle çizilen SVG ile PDF çıktısı da taranır
+- İçerik tipleri (WiFi/vCard kaçışları vb.), CSV ayrıştırma, ZIP yapısı ve
+  localStorage ayarları
+
+Uçtan uca testler için `zbarimg`, `rsvg-convert` ve `pdftoppm` gerekir
+(Debian/Ubuntu: `apt install zbar-tools librsvg2-bin poppler-utils`); kurulu değilse
+bu testler atlanır. CI'da hepsi kuruludur.
 
 ---
 

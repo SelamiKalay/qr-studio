@@ -199,6 +199,7 @@ development key; create a separate release key for the Play Store.
 │   ├── AndroidManifest.xml
 │   ├── java/com/qrstudio/app/MainActivity.java
 │   └── res/                # icons, themes, strings
+├── tests/                  # node:test unit and end-to-end tests
 ├── tools/
 │   └── make-icons.js       # PNG icon generator (with Node zlib)
 ├── build-apk.ps1           # APK builder (without Gradle)
@@ -243,6 +244,27 @@ The PDF flips the page coordinate system with the matrix `[s 0 0 -s ox oy] cm` a
 uses the design coordinates directly; text is flipped back upright with
 `1 0 0 -1 x y Tm`; the gradient is defined as a `PatternType 2` shading pattern
 carrying the same matrix. The xref table is computed with byte offsets.
+
+## Tests
+
+Tests for the `js/` modules live in `tests/` and use Node's built-in test runner
+(`node:test`); no npm packages are needed (Node 22+).
+
+```bash
+node --test 'tests/**/*.test.js'
+```
+
+- **Encoder:** format/version bits from the ISO/IEC 18004 tables, a Reed-Solomon
+  example, capacity limits and block structure
+- **End to end:** generated QR codes are decoded with an independent reader (zbar) —
+  all four error correction levels, all 8 masks, versions 1–40, Turkish/emoji content;
+  SVGs drawn with every dot and eye shape and the PDF output are scanned too
+- Content types (WiFi/vCard escaping etc.), CSV parsing, ZIP structure and
+  localStorage settings
+
+The end-to-end tests need `zbarimg`, `rsvg-convert` and `pdftoppm`
+(Debian/Ubuntu: `apt install zbar-tools librsvg2-bin poppler-utils`); they are
+skipped if these are not installed. All of them are installed in CI.
 
 ---
 
